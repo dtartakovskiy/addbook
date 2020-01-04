@@ -25,6 +25,33 @@ UI.prototype.addBookToList = function (book) {
 	list.appendChild(row);
 }
 
+// Delete book
+UI.prototype.deleteBookFromList = function (target) {
+	if (target.classList.contains('delete')) {
+		target.parentElement.parentElement.remove();
+	}
+}
+
+// Show alert
+UI.prototype.showAlert = function (message, className) {
+	// Create a div
+	const div = document.createElement('div');
+	// Add classes
+	div.className = `alert ${className}`;
+	// Add a text node
+	div.appendChild(document.createTextNode(message));
+	// Get parent
+	const container = document.querySelector('.container');
+	const form = document.querySelector('#book-form');
+	// Insert alert
+	container.insertBefore(div, form);
+
+	// Timeout after 3 sec
+	setTimeout(() => {
+		div.remove();
+	}, 3000);
+}
+
 // Clear fields
 UI.prototype.clearFields = function () {
 	document.querySelector('#title').value = '';
@@ -32,7 +59,7 @@ UI.prototype.clearFields = function () {
 	document.querySelector('#isbn').value = '';
 }
 
-// Event listeners
+// Event listener for add book
 const bookForm = document.querySelector('#book-form');
 bookForm.addEventListener('submit', function (e) {
 	e.preventDefault();
@@ -48,9 +75,27 @@ bookForm.addEventListener('submit', function (e) {
 	// Instantiate UI
 	const ui = new UI();
 
-	// Add a book to the list
-	ui.addBookToList(book);
+	// Validate 
+	if (title === '' || author === '' || isbn === '') {
+		//
+		ui.showAlert('Please, fill in all fields', 'error');
+	} else {
+		// Add a book to the list
+		ui.addBookToList(book);
+		// Show alert if the book is added
+		ui.showAlert('The book is successully added', 'success');
+		// Clear fields
+		ui.clearFields();
+	}
+	console.log(ui); 
+});
 
-	// Clear fields
-	ui.clearFields();
+// Event listener for delete
+const bookList = document.querySelector('#book-list');
+bookList.addEventListener('click', function (e) {
+	e.preventDefault();
+	// Instantiate UI
+	const ui = new UI();
+	ui.deleteBookFromList(e.target);
+	ui.showAlert('The book was successufully removed from the list', 'success');
 });
